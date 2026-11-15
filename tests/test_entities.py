@@ -11,6 +11,7 @@ from homeassistant.const import (
     STATE_ON,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
+    EntityCategory,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ServiceValidationError
@@ -304,6 +305,9 @@ async def test_last_alarm(
     assert state.state == "alarm_19"
     assert state.attributes["code"] == 19
     assert "alarm_23" in state.attributes["options"]
+    # History, not an active alarm: kept with the diagnostics.
+    entry = er.async_get(hass).async_get(entity_id(hass, "sensor", "alarm_code"))
+    assert entry.entity_category is EntityCategory.DIAGNOSTIC
 
 
 async def test_select_electric_heater_max_power(

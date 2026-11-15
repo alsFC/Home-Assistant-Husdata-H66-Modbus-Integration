@@ -80,6 +80,8 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
         translation_key="alarm_code",
         device_class=SensorDeviceClass.ENUM,
         options=[f"alarm_{code}" for code in ALARM_CODES],
+        # The last alarm that triggered, not an active one ("Alarm" is that).
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     _hours("compressor_hours_heating"),
     _hours("compressor_hours_hot_water"),

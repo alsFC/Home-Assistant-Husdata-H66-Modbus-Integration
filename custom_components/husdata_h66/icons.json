@@ -64,7 +64,7 @@
         "default": "mdi:heating-coil"
       },
       "alarm_code": {
-        "default": "mdi:alert-circle-outline"
+        "default": "mdi:history"
       },
       "compressor_hours_heating": {
         "default": "mdi:timer-outline"

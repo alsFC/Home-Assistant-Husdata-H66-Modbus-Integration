@@ -78,7 +78,7 @@ Names below are for a Rego 600, with the meanings from Husdata's [variable list 
 | Additional heat | Sensor | Electric heater, % |
 | Power consumption, Accumulated consumption | Sensor | Calculated by the H66 from the wattages set on its web page. Accumulated consumption restarts at 0 when the H66 boots, which the Energy dashboard handles |
 | Compressor/Electric heater hours heating/hot water | Sensor | Diagnostic |
-| Last alarm | Sensor | The last alarm that triggered, even if no alarm is active now, as text. The raw code is in the `code` attribute |
+| Last alarm | Sensor | The last alarm that triggered, even if no alarm is active now, as text. The raw code is in the `code` attribute. Diagnostic; Alarm shows whether an alarm is active |
 | Room sensor influence | Sensor | Diagnostic, disabled by default |
 | Compressor, Additional heat step 1/2, Brine pump, Heat carrier pump, Radiator pump | Binary sensor | Running |
 | Hot water production | Binary sensor | The switch valve: on while making hot water, off while heating the radiators |
