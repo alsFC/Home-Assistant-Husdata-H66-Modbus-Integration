@@ -376,3 +376,87 @@ async def test_external_control_is_write_only(
     await setup_integration.runtime_data.async_refresh()
     await hass.async_block_till_done()
     assert hass.states.get(target).state == STATE_ON
+
+
+def _lagging(unit: MockModbusUnit, address: int, old: int) -> None:
+    """Make the mock act like the H66: a written register keeps reading old."""
+
+    def keep_old(event: WriteEvent) -> None:
+        if event.address == address:
+            unit.holding[address] = old
+
+    unit.on_write(keep_old)
+
+
+async def _tick(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory, seconds: int
+) -> None:
+    freezer.tick(timedelta(seconds=seconds))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+async def test_written_value_shown_while_h66_lags(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_modbus: MockModbusUnit,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    target = entity_id(hass, "number", "room_setpoint")
+    _lagging(mock_modbus, 14, 210)
+    await hass.services.async_call(
+        "number", "set_value", {"entity_id": target, "value": 21.5}, blocking=True
+    )
+    # Shown at once, although the register still reads 21.0.
+    assert hass.states.get(target).state == "21.5"
+
+    # The delayed read-back and the next poll still read 21.0: keep 21.5.
+    reads = len(mock_modbus.read_events)
+    await _tick(hass, freezer, 11)
+    assert len(mock_modbus.read_events) > reads
+    assert hass.states.get(target).state == "21.5"
+    await _tick(hass, freezer, 30)
+    assert hass.states.get(target).state == "21.5"
+
+    # The H66 catches up; from then on the register is trusted again.
+    mock_modbus.holding[14] = 215
+    await _tick(hass, freezer, 31)
+    assert hass.states.get(target).state == "21.5"
+    mock_modbus.holding[14] = 220
+    await _tick(hass, freezer, 31)
+    assert hass.states.get(target).state == "22.0"
+
+
+async def test_unconfirmed_write_falls_back_to_h66_value(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_modbus: MockModbusUnit,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    target = entity_id(hass, "number", "room_setpoint")
+    _lagging(mock_modbus, 14, 210)
+    await hass.services.async_call(
+        "number", "set_value", {"entity_id": target, "value": 21.5}, blocking=True
+    )
+    assert hass.states.get(target).state == "21.5"
+
+    # The H66 never reports it: after a minute its own value wins.
+    for _ in range(3):
+        await _tick(hass, freezer, 31)
+    assert hass.states.get(target).state == "21.0"
+
+
+async def test_switch_shown_while_h66_lags(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_modbus: MockModbusUnit,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    target = entity_id(hass, "switch", "electric_heater_allowed")
+    _lagging(mock_modbus, 21, 1)
+    await hass.services.async_call(
+        "switch", "turn_off", {"entity_id": target}, blocking=True
+    )
+    assert hass.states.get(target).state == STATE_OFF
+    await _tick(hass, freezer, 11)
+    assert hass.states.get(target).state == STATE_OFF
