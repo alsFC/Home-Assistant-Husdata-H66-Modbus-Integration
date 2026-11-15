@@ -1,0 +1,121 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Enter the address of your Husdata H66. Modbus TCP must be turned on in the H66 (MODBUS_PORT 502 under Config > Modbus). The H66 accepts only one Modbus client at a time.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Unit ID"
+        },
+        "data_description": {
+          "host": "Host name or IP address of the H66.",
+          "port": "The H66 MODBUS_PORT setting, usually 502.",
+          "unit_id": "Modbus unit ID, usually 1."
+        }
+      },
+      "reconfigure": {
+        "description": "Change how Home Assistant reaches your Husdata H66.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Unit ID"
+        },
+        "data_description": {
+          "host": "Host name or IP address of the H66.",
+          "port": "The H66 MODBUS_PORT setting, usually 502.",
+          "unit_id": "Modbus unit ID, usually 1."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not read the H66 over Modbus. Check the address, and that Modbus TCP is turned on and no other Modbus client is connected. {error}",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This H66 is already configured",
+      "reconfigure_successful": "The H66 was reconfigured",
+      "wrong_device": "That address belongs to another H66"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Polling interval"
+        },
+        "data_description": {
+          "scan_interval": "How often to read all values from the H66."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "compressor": { "name": "Compressor" },
+      "add_heat_step_1": { "name": "Additional heat step 1" },
+      "add_heat_step_2": { "name": "Additional heat step 2" },
+      "pump_cold_circuit": { "name": "Brine pump" },
+      "pump_heat_circuit": { "name": "Heat carrier pump" },
+      "pump_radiator": { "name": "Radiator pump" },
+      "switch_valve_1": { "name": "Switch valve" },
+      "alarm": { "name": "Alarm" }
+    },
+    "button": {
+      "alarm_reset": { "name": "Reset alarm" }
+    },
+    "number": {
+      "room_setpoint": { "name": "Room temperature setpoint" },
+      "heat_curve": { "name": "Heat curve" },
+      "heat_curve_parallel": { "name": "Heat curve parallel offset" },
+      "hot_water_stop_temperature": { "name": "Hot water stop temperature" },
+      "hot_water_difference": { "name": "Hot water start difference" },
+      "extra_hot_water": { "name": "Extra hot water" },
+      "electric_heater_max_power": { "name": "Electric heater max power step" },
+      "summer_mode": { "name": "Summer mode outdoor temperature" },
+      "holiday_mode": { "name": "Holiday mode" }
+    },
+    "sensor": {
+      "radiator_return": { "name": "Radiator return" },
+      "radiator_forward": { "name": "Radiator forward" },
+      "heat_carrier_return": { "name": "Heat carrier return" },
+      "heat_carrier_forward": { "name": "Heat carrier forward" },
+      "brine_in": { "name": "Brine in" },
+      "brine_out": { "name": "Brine out" },
+      "outdoor": { "name": "Outdoor temperature" },
+      "indoor": { "name": "Indoor temperature" },
+      "hot_water_top": { "name": "Hot water top" },
+      "hot_water_mid": { "name": "Hot water middle" },
+      "hot_gas": { "name": "Hot gas" },
+      "heating_setpoint": { "name": "Heating setpoint" },
+      "hot_water_setpoint": { "name": "Hot water setpoint" },
+      "add_heat_status": { "name": "Additional heat" },
+      "alarm_code": { "name": "Alarm code" },
+      "compressor_hours_heating": { "name": "Compressor hours heating" },
+      "compressor_hours_hot_water": { "name": "Compressor hours hot water" },
+      "aux_heater_hours_heating": { "name": "Electric heater hours heating" },
+      "aux_heater_hours_hot_water": { "name": "Electric heater hours hot water" },
+      "power_consumption": { "name": "Power consumption" },
+      "accumulated_consumption": { "name": "Accumulated consumption" },
+      "room_sensor_influence": { "name": "Room sensor influence" }
+    },
+    "switch": {
+      "electric_heater_allowed": { "name": "Electric heater allowed" },
+      "external_control": { "name": "External control" }
+    }
+  },
+  "exceptions": {
+    "update_failed": {
+      "message": "Could not read the H66: {error}"
+    },
+    "communication_error": {
+      "message": "Could not write to the H66: {error}"
+    },
+    "invalid_value": {
+      "message": "Invalid value: {error}"
+    },
+    "connection_in_use": {
+      "message": "The H66 Modbus connection is already in use with other settings: {error}"
+    }
+  }
+}

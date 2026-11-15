@@ -1,0 +1,121 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Ange adressen till din Husdata H66. Modbus TCP måste vara påslaget i H66 (MODBUS_PORT 502 under Config > Modbus). H66 tar bara emot en Modbus-klient åt gången.",
+        "data": {
+          "host": "Värd",
+          "port": "Port",
+          "unit_id": "Enhets-ID"
+        },
+        "data_description": {
+          "host": "Värdnamn eller IP-adress till H66.",
+          "port": "Inställningen MODBUS_PORT i H66, oftast 502.",
+          "unit_id": "Modbus enhets-ID, oftast 1."
+        }
+      },
+      "reconfigure": {
+        "description": "Ändra hur Home Assistant når din Husdata H66.",
+        "data": {
+          "host": "Värd",
+          "port": "Port",
+          "unit_id": "Enhets-ID"
+        },
+        "data_description": {
+          "host": "Värdnamn eller IP-adress till H66.",
+          "port": "Inställningen MODBUS_PORT i H66, oftast 502.",
+          "unit_id": "Modbus enhets-ID, oftast 1."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kunde inte läsa H66 via Modbus. Kontrollera adressen, att Modbus TCP är påslaget och att ingen annan Modbus-klient är ansluten. {error}",
+      "unknown": "Oväntat fel"
+    },
+    "abort": {
+      "already_configured": "Den här H66 är redan konfigurerad",
+      "reconfigure_successful": "H66 konfigurerades om",
+      "wrong_device": "Adressen tillhör en annan H66"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Avläsningsintervall"
+        },
+        "data_description": {
+          "scan_interval": "Hur ofta alla värden läses från H66."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "compressor": { "name": "Kompressor" },
+      "add_heat_step_1": { "name": "Tillsatsvärme steg 1" },
+      "add_heat_step_2": { "name": "Tillsatsvärme steg 2" },
+      "pump_cold_circuit": { "name": "Köldbärarpump" },
+      "pump_heat_circuit": { "name": "Värmebärarpump" },
+      "pump_radiator": { "name": "Radiatorpump" },
+      "switch_valve_1": { "name": "Växelventil" },
+      "alarm": { "name": "Larm" }
+    },
+    "button": {
+      "alarm_reset": { "name": "Återställ larm" }
+    },
+    "number": {
+      "room_setpoint": { "name": "Börvärde rumstemperatur" },
+      "heat_curve": { "name": "Värmekurva" },
+      "heat_curve_parallel": { "name": "Värmekurva parallellförskjutning" },
+      "hot_water_stop_temperature": { "name": "Varmvatten stopptemperatur" },
+      "hot_water_difference": { "name": "Varmvatten startdifferens" },
+      "extra_hot_water": { "name": "Extra varmvatten" },
+      "electric_heater_max_power": { "name": "Elpatron max effektsteg" },
+      "summer_mode": { "name": "Sommarläge utetemperatur" },
+      "holiday_mode": { "name": "Semesterläge" }
+    },
+    "sensor": {
+      "radiator_return": { "name": "Radiator retur" },
+      "radiator_forward": { "name": "Radiator framledning" },
+      "heat_carrier_return": { "name": "Värmebärare retur" },
+      "heat_carrier_forward": { "name": "Värmebärare framledning" },
+      "brine_in": { "name": "Köldbärare in" },
+      "brine_out": { "name": "Köldbärare ut" },
+      "outdoor": { "name": "Utetemperatur" },
+      "indoor": { "name": "Innetemperatur" },
+      "hot_water_top": { "name": "Varmvatten topp" },
+      "hot_water_mid": { "name": "Varmvatten mitt" },
+      "hot_gas": { "name": "Hetgas" },
+      "heating_setpoint": { "name": "Börvärde värme" },
+      "hot_water_setpoint": { "name": "Börvärde varmvatten" },
+      "add_heat_status": { "name": "Tillsatsvärme" },
+      "alarm_code": { "name": "Larmkod" },
+      "compressor_hours_heating": { "name": "Drifttid kompressor värme" },
+      "compressor_hours_hot_water": { "name": "Drifttid kompressor varmvatten" },
+      "aux_heater_hours_heating": { "name": "Drifttid elpatron värme" },
+      "aux_heater_hours_hot_water": { "name": "Drifttid elpatron varmvatten" },
+      "power_consumption": { "name": "Effektförbrukning" },
+      "accumulated_consumption": { "name": "Ackumulerad förbrukning" },
+      "room_sensor_influence": { "name": "Rumsgivarens inverkan" }
+    },
+    "switch": {
+      "electric_heater_allowed": { "name": "Elpatron tillåten" },
+      "external_control": { "name": "Extern styrning" }
+    }
+  },
+  "exceptions": {
+    "update_failed": {
+      "message": "Kunde inte läsa H66: {error}"
+    },
+    "communication_error": {
+      "message": "Kunde inte skriva till H66: {error}"
+    },
+    "invalid_value": {
+      "message": "Ogiltigt värde: {error}"
+    },
+    "connection_in_use": {
+      "message": "Modbus-anslutningen till H66 används redan med andra inställningar: {error}"
+    }
+  }
+}
