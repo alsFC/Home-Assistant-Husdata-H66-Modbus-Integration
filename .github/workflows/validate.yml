@@ -24,7 +24,7 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
-          # No brand images yet. Add them to brand/ (served by Home Assistant
-          # 2026.10+); this check looks in the home-assistant/brands repository
-          # instead, so keep the ignore.
+          # The integration ships its own images in brand/ (served by Home
+          # Assistant 2026.10+); this check looks in the home-assistant/brands
+          # repository instead. Remove the ignore if the action learns brand/.
           ignore: brands

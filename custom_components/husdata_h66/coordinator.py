@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Coroutine
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -19,12 +20,24 @@ from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
 
 type H66ConfigEntry = ConfigEntry[H66Coordinator]
 
-# The H66 shows a written value in its Modbus registers only after a few
-# seconds (seen with the room setpoint: old value straight after the write,
-# new value at the next poll 30 s later). Read back after WRITE_SETTLE, and keep showing the
-# written value until a read matches it or WRITE_HOLD has passed.
+# The H66 applies a write only after a while (seen with the room setpoint: up
+# to ~25 s before its web page and Modbus register show it), and it can drop a
+# write that follows shortly after another one. So: read back after
+# WRITE_SETTLE, keep showing the written value until a read matches it, and if
+# that hasn't happened within WRITE_HOLD, write it once more; if the retry
+# isn't confirmed within another WRITE_HOLD either, log it and show what the
+# H66 reports.
 WRITE_SETTLE = timedelta(seconds=10)
 WRITE_HOLD = timedelta(seconds=60)
+
+
+@dataclass(slots=True)
+class PendingWrite:
+    """A written value the H66 hasn't reported back yet."""
+
+    value: Any
+    deadline: datetime
+    retried: bool = False
 
 
 class H66Coordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -56,8 +69,7 @@ class H66Coordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.firmware = firmware
         self.controller = controller
         self.mac = mac
-        # Register key -> (written value, keep it until).
-        self._pending_writes: dict[str, tuple[Any, datetime]] = {}
+        self._pending_writes: dict[str, PendingWrite] = {}
         self._unsub_read_back: CALLBACK_TYPE | None = None
 
     @property
@@ -86,28 +98,68 @@ class H66Coordinator(DataUpdateCoordinator[dict[str, Any]]):
                 translation_key="update_failed",
                 translation_placeholders={"error": error},
             )
-        return self._with_pending_writes(self.device.values)
+        return self._with_pending_writes(self.device.values, read=True)
 
-    def _with_pending_writes(self, values: dict[str, Any]) -> dict[str, Any]:
+    def _with_pending_writes(
+        self, values: dict[str, Any], *, read: bool = False
+    ) -> dict[str, Any]:
         """Keep recently written values until the H66 reports them.
 
-        The H66 takes a write at once, but its Modbus register shows the new
-        value only seconds later. Until then a read returns the old value,
-        which would make the entity jump back. A written value is kept until
-        a read matches it or WRITE_HOLD has passed; after that the H66 wins.
+        Until a read (``read=True``) returns the written value, the written
+        value is shown instead of the H66's. When WRITE_HOLD runs out first,
+        the value is written once more; when the retry runs out too, the
+        H66's value wins and a warning is logged.
         """
         now = dt_util.utcnow()
-        for key, (value, deadline) in list(self._pending_writes.items()):
-            if values.get(key) == value or now >= deadline:
+        for key, pending in list(self._pending_writes.items()):
+            if values.get(key) == pending.value:
                 del self._pending_writes[key]
+            elif not read or now < pending.deadline:
+                values[key] = pending.value
+            elif not pending.retried:
+                LOGGER.warning(
+                    "The H66 hasn't applied %s = %s within %s s (it reports %s); "
+                    "writing it again",
+                    key,
+                    pending.value,
+                    int(WRITE_HOLD.total_seconds()),
+                    values.get(key),
+                )
+                pending.retried = True
+                pending.deadline = now + WRITE_HOLD
+                values[key] = pending.value
+                self.config_entry.async_create_background_task(
+                    self.hass,
+                    self._async_retry_write(key, pending.value),
+                    f"husdata_h66 retry {key}",
+                )
             else:
-                values[key] = value
+                LOGGER.warning(
+                    "The H66 didn't apply %s = %s, also after a retry; it reports %s",
+                    key,
+                    pending.value,
+                    values.get(key),
+                )
+                del self._pending_writes[key]
         return values
+
+    async def _async_retry_write(self, key: str, value: Any) -> None:
+        """Write a value the H66 didn't apply once more."""
+        try:
+            await self.device.async_set(key, value)
+        except (ModbusError, ValueError) as err:
+            LOGGER.warning("Retrying %s = %s failed: %s", key, value, err)
+            self._pending_writes.pop(key, None)
+            return
+        self._schedule_read_back()
 
     async def async_set(self, key: str, value: float | bool) -> None:
         """Write a setting, show it at once, and read it back a bit later."""
         await self._async_write(self.device.async_set(key, value))
-        self._pending_writes[key] = (value, dt_util.utcnow() + WRITE_HOLD)
+        if self.registers[key].write_only:
+            # Nothing to confirm: the H66 can't read the value back.
+            return
+        self._pending_writes[key] = PendingWrite(value, dt_util.utcnow() + WRITE_HOLD)
         if self.data is not None:
             self.async_set_updated_data(self._with_pending_writes(dict(self.data)))
 

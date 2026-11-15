@@ -427,23 +427,87 @@ async def test_written_value_shown_while_h66_lags(
     assert hass.states.get(target).state == "22.0"
 
 
-async def test_unconfirmed_write_falls_back_to_h66_value(
+async def test_unconfirmed_write_is_retried_once_then_h66_wins(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_modbus: MockModbusUnit,
+    freezer: FrozenDateTimeFactory,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    target = entity_id(hass, "number", "room_setpoint")
+    _lagging(mock_modbus, 14, 210)
+    writes = _writes(mock_modbus)
+    await hass.services.async_call(
+        "number", "set_value", {"entity_id": target, "value": 21.5}, blocking=True
+    )
+    assert hass.states.get(target).state == "21.5"
+
+    # The H66 never reports it: after the hold the value is written again.
+    for _ in range(3):
+        await _tick(hass, freezer, 31)
+    assert [(w.address, w.values) for w in writes] == [(14, [215]), (14, [215])]
+    assert "writing it again" in caplog.text
+    assert hass.states.get(target).state == "21.5"
+
+    # The retry isn't applied either: give up, show the H66's value, no 3rd write.
+    for _ in range(3):
+        await _tick(hass, freezer, 31)
+    assert hass.states.get(target).state == "21.0"
+    assert "also after a retry" in caplog.text
+    assert len(writes) == 2
+
+
+async def test_dropped_write_applied_by_retry(
     hass: HomeAssistant,
     setup_integration: MockConfigEntry,
     mock_modbus: MockModbusUnit,
     freezer: FrozenDateTimeFactory,
 ) -> None:
     target = entity_id(hass, "number", "room_setpoint")
-    _lagging(mock_modbus, 14, 210)
+    writes = _writes(mock_modbus)
+
+    # Like the H66 on 2026-11-15: the first write is dropped, the retry lands.
+    def drop_first(event: WriteEvent) -> None:
+        if len(writes) == 1:
+            mock_modbus.holding[14] = 210
+
+    mock_modbus.on_write(drop_first)
     await hass.services.async_call(
         "number", "set_value", {"entity_id": target, "value": 21.5}, blocking=True
     )
-    assert hass.states.get(target).state == "21.5"
-
-    # The H66 never reports it: after a minute its own value wins.
     for _ in range(3):
         await _tick(hass, freezer, 31)
-    assert hass.states.get(target).state == "21.0"
+    assert len(writes) == 2
+    assert mock_modbus.holding[14] == 215
+    assert hass.states.get(target).state == "21.5"
+
+    # Confirmed: later changes on the H66 show up again.
+    mock_modbus.holding[14] = 220
+    await _tick(hass, freezer, 31)
+    assert hass.states.get(target).state == "22.0"
+
+
+async def test_write_only_setting_is_not_retried(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_modbus: MockModbusUnit,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    target = entity_id(hass, "switch", "external_control")
+    er.async_get(hass).async_update_entity(target, disabled_by=None)
+    await hass.config_entries.async_reload(setup_integration.entry_id)
+    await hass.async_block_till_done()
+
+    writes = _writes(mock_modbus)
+    _lagging(mock_modbus, 23, 0)
+    await hass.services.async_call(
+        "switch", "turn_on", {"entity_id": target}, blocking=True
+    )
+    for _ in range(5):
+        await _tick(hass, freezer, 31)
+    # The register always reads 0 for it, but that means nothing: one write only.
+    assert [(w.address, w.values) for w in writes] == [(23, [1])]
+    assert hass.states.get(target).state == STATE_ON
 
 
 async def test_switch_shown_while_h66_lags(
