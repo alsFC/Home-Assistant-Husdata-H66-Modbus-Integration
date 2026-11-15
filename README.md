@@ -69,7 +69,7 @@ Custom registers you add in the H66 show up as sensors, named as on the H66 web 
 
 ## Entities
 
-Names below are for a Rego 600. Entities only appear for registers your H66 has. The integration is translated to English and Swedish, and follows your Home Assistant language.
+Names below are for a Rego 600, with the meanings from Husdata's [variable list for Rego 600/637](https://online.husdata.se/h-docs/C00.pdf). Entities only appear for registers your H66 has. The integration is translated to English and Swedish, and follows your Home Assistant language.
 
 | Entity | Type | Notes |
 |---|---|---|
@@ -78,17 +78,20 @@ Names below are for a Rego 600. Entities only appear for registers your H66 has.
 | Additional heat | Sensor | Electric heater, % |
 | Power consumption, Accumulated consumption | Sensor | Calculated by the H66 from the wattages set on its web page. Accumulated consumption restarts at 0 when the H66 boots, which the Energy dashboard handles |
 | Compressor/Electric heater hours heating/hot water | Sensor | Diagnostic |
-| Alarm code | Sensor | Diagnostic |
+| Last alarm | Sensor | The last alarm that triggered, even if no alarm is active now, as text. The raw code is in the `code` attribute |
 | Room sensor influence | Sensor | Diagnostic, disabled by default |
-| Compressor, Additional heat step 1/2, Brine pump, Heat carrier pump, Radiator pump, Switch valve | Binary sensor | Running |
+| Compressor, Additional heat step 1/2, Brine pump, Heat carrier pump, Radiator pump | Binary sensor | Running |
+| Hot water production | Binary sensor | The switch valve: on while making hot water, off while heating the radiators |
 | Alarm | Binary sensor | Problem |
 | Room temperature setpoint | Number | 5–29 °C |
 | Extra hot water | Number | 0–1440 min, in whole hours |
 | Summer mode outdoor temperature | Number | 0–30 °C |
-| Holiday mode | Number | 0–30 |
-| Heat curve, Heat curve parallel offset, Hot water stop temperature, Hot water start difference, Electric heater max power step | Number | Config |
-| Electric heater allowed, External control | Switch | Config |
-| Reset alarm | Button | |
+| Holiday mode | Number | 0–30 days. Disabled by default, since how the H66 stores it isn't verified yet. While it's active, set it to 0 before setting a new value |
+| Heat curve, Heat curve parallel offset, Hot water stop temperature, Hot water start difference | Number | Config |
+| Electric heater max power | Select | 3, 6 or 9 kW. Config |
+| Electric heater allowed | Switch | Takes effect the next time the electric heater would start. Config |
+| External control | Switch | Config, disabled by default. The H66 can't read it back, so it shows what you last set. Husdata warns it can behave unpredictably on a Rego 600 |
+| Reset alarm | Button | Turns the heat pump off for 10 seconds and on again |
 
 ## Development
 

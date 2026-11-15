@@ -52,56 +52,177 @@
   },
   "entity": {
     "binary_sensor": {
-      "compressor": { "name": "Kompressor" },
-      "add_heat_step_1": { "name": "Tillsatsvärme steg 1" },
-      "add_heat_step_2": { "name": "Tillsatsvärme steg 2" },
-      "pump_cold_circuit": { "name": "Köldbärarpump" },
-      "pump_heat_circuit": { "name": "Värmebärarpump" },
-      "pump_radiator": { "name": "Radiatorpump" },
-      "switch_valve_1": { "name": "Växelventil" },
-      "alarm": { "name": "Larm" }
+      "compressor": {
+        "name": "Kompressor"
+      },
+      "add_heat_step_1": {
+        "name": "Tillsatsvärme steg 1"
+      },
+      "add_heat_step_2": {
+        "name": "Tillsatsvärme steg 2"
+      },
+      "pump_cold_circuit": {
+        "name": "Köldbärarpump"
+      },
+      "pump_heat_circuit": {
+        "name": "Värmebärarpump"
+      },
+      "pump_radiator": {
+        "name": "Radiatorpump"
+      },
+      "switch_valve_1": {
+        "name": "Varmvattenproduktion"
+      },
+      "alarm": {
+        "name": "Larm"
+      }
     },
     "button": {
-      "alarm_reset": { "name": "Återställ larm" }
+      "alarm_reset": {
+        "name": "Återställ larm"
+      }
     },
     "number": {
-      "room_setpoint": { "name": "Börvärde rumstemperatur" },
-      "heat_curve": { "name": "Värmekurva" },
-      "heat_curve_parallel": { "name": "Värmekurva parallellförskjutning" },
-      "hot_water_stop_temperature": { "name": "Varmvatten stopptemperatur" },
-      "hot_water_difference": { "name": "Varmvatten startdifferens" },
-      "extra_hot_water": { "name": "Extra varmvatten" },
-      "electric_heater_max_power": { "name": "Elpatron max effektsteg" },
-      "summer_mode": { "name": "Sommarläge utetemperatur" },
-      "holiday_mode": { "name": "Semesterläge" }
+      "room_setpoint": {
+        "name": "Börvärde rumstemperatur"
+      },
+      "heat_curve": {
+        "name": "Värmekurva"
+      },
+      "heat_curve_parallel": {
+        "name": "Värmekurva parallellförskjutning"
+      },
+      "hot_water_stop_temperature": {
+        "name": "Varmvatten stopptemperatur"
+      },
+      "hot_water_difference": {
+        "name": "Varmvatten startdifferens"
+      },
+      "extra_hot_water": {
+        "name": "Extra varmvatten"
+      },
+      "summer_mode": {
+        "name": "Sommarläge utetemperatur"
+      },
+      "holiday_mode": {
+        "name": "Semesterläge"
+      }
+    },
+    "select": {
+      "electric_heater_max_power": {
+        "name": "Elpatron max effekt",
+        "state": {
+          "3_kw": "3 kW",
+          "6_kw": "6 kW",
+          "9_kw": "9 kW"
+        }
+      }
     },
     "sensor": {
-      "radiator_return": { "name": "Radiator retur" },
-      "radiator_forward": { "name": "Radiator framledning" },
-      "heat_carrier_return": { "name": "Värmebärare retur" },
-      "heat_carrier_forward": { "name": "Värmebärare framledning" },
-      "brine_in": { "name": "Köldbärare in" },
-      "brine_out": { "name": "Köldbärare ut" },
-      "outdoor": { "name": "Utetemperatur" },
-      "indoor": { "name": "Innetemperatur" },
-      "hot_water_top": { "name": "Varmvatten topp" },
-      "hot_water_mid": { "name": "Varmvatten mitt" },
-      "hot_gas": { "name": "Hetgas" },
-      "heating_setpoint": { "name": "Börvärde värme" },
-      "hot_water_setpoint": { "name": "Börvärde varmvatten" },
-      "add_heat_status": { "name": "Tillsatsvärme" },
-      "alarm_code": { "name": "Larmkod" },
-      "compressor_hours_heating": { "name": "Drifttid kompressor värme" },
-      "compressor_hours_hot_water": { "name": "Drifttid kompressor varmvatten" },
-      "aux_heater_hours_heating": { "name": "Drifttid elpatron värme" },
-      "aux_heater_hours_hot_water": { "name": "Drifttid elpatron varmvatten" },
-      "power_consumption": { "name": "Effektförbrukning" },
-      "accumulated_consumption": { "name": "Ackumulerad förbrukning" },
-      "room_sensor_influence": { "name": "Rumsgivarens inverkan" }
+      "radiator_return": {
+        "name": "Radiator retur"
+      },
+      "radiator_forward": {
+        "name": "Radiator framledning"
+      },
+      "heat_carrier_return": {
+        "name": "Värmebärare retur"
+      },
+      "heat_carrier_forward": {
+        "name": "Värmebärare framledning"
+      },
+      "brine_in": {
+        "name": "Köldbärare in"
+      },
+      "brine_out": {
+        "name": "Köldbärare ut"
+      },
+      "outdoor": {
+        "name": "Utetemperatur"
+      },
+      "indoor": {
+        "name": "Innetemperatur"
+      },
+      "hot_water_top": {
+        "name": "Varmvatten topp"
+      },
+      "hot_water_mid": {
+        "name": "Varmvatten mitt"
+      },
+      "hot_gas": {
+        "name": "Hetgas"
+      },
+      "heating_setpoint": {
+        "name": "Börvärde värme"
+      },
+      "hot_water_setpoint": {
+        "name": "Börvärde varmvatten"
+      },
+      "add_heat_status": {
+        "name": "Tillsatsvärme"
+      },
+      "alarm_code": {
+        "name": "Senaste larm",
+        "state": {
+          "alarm_1": "Givare radiatorretur (GT1)",
+          "alarm_2": "Utegivare (GT2)",
+          "alarm_3": "Givare varmvatten (GT3)",
+          "alarm_4": "Givare blandningsventil (GT4)",
+          "alarm_5": "Rumsgivare (GT5)",
+          "alarm_6": "Givare kompressor (GT6)",
+          "alarm_7": "Givare värmebärare ut (GT8)",
+          "alarm_8": "Givare värmebärare in (GT9)",
+          "alarm_9": "Givare köldbärare in (GT10)",
+          "alarm_10": "Givare köldbärare ut (GT11)",
+          "alarm_11": "Kompressorkretsbrytare",
+          "alarm_12": "Elkassett",
+          "alarm_13": "Pumpkretsbrytare (MB2)",
+          "alarm_14": "Lågtryckspressostat (LP)",
+          "alarm_15": "Högtryckspressostat (HP)",
+          "alarm_16": "Hög retur VP (GT9)",
+          "alarm_17": "Värmebärare ut max (GT8)",
+          "alarm_18": "Köldbärare in under gräns (GT10)",
+          "alarm_19": "Köldbärare ut under gräns (GT11)",
+          "alarm_20": "Överhettning kompressor (GT6)",
+          "alarm_21": "Fel fasföljd",
+          "alarm_22": "Strömavbrott",
+          "alarm_23": "För stor temperaturdifferens"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Kod"
+          }
+        }
+      },
+      "compressor_hours_heating": {
+        "name": "Drifttid kompressor värme"
+      },
+      "compressor_hours_hot_water": {
+        "name": "Drifttid kompressor varmvatten"
+      },
+      "aux_heater_hours_heating": {
+        "name": "Drifttid elpatron värme"
+      },
+      "aux_heater_hours_hot_water": {
+        "name": "Drifttid elpatron varmvatten"
+      },
+      "power_consumption": {
+        "name": "Effektförbrukning"
+      },
+      "accumulated_consumption": {
+        "name": "Ackumulerad förbrukning"
+      },
+      "room_sensor_influence": {
+        "name": "Rumsgivarens inverkan"
+      }
     },
     "switch": {
-      "electric_heater_allowed": { "name": "Elpatron tillåten" },
-      "external_control": { "name": "Extern styrning" }
+      "electric_heater_allowed": {
+        "name": "Elpatron tillåten"
+      },
+      "external_control": {
+        "name": "Extern styrning"
+      }
     }
   },
   "exceptions": {

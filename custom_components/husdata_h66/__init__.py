@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from homeassistant.components.modbus import async_get_unit
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryError, HomeAssistantError
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_validation as cv, entity_registry as er
 from homeassistant.helpers.typing import ConfigType
 from husdata_h66 import REGO600_REGISTERS, HusdataH66, Register
 from modbus_connection import ModbusTcpParams
@@ -26,16 +26,33 @@ PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
     Platform.BUTTON,
     Platform.NUMBER,
+    Platform.SELECT,
     Platform.SENSOR,
     Platform.SWITCH,
 ]
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
+# Entities replaced by another platform: (old platform, register key).
+_REPLACED_ENTITIES = (("number", "electric_heater_max_power"),)
+
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the integration."""
     return True
+
+
+@callback
+def _async_remove_replaced_entities(hass: HomeAssistant, entry: H66ConfigEntry) -> None:
+    """Drop entities that moved to another platform, so they don't linger."""
+    registry = er.async_get(hass)
+    device_key = entry.unique_id or entry.entry_id
+    for platform, key in _REPLACED_ENTITIES:
+        entity_id = registry.async_get_entity_id(
+            platform, DOMAIN, f"{device_key}_{key}"
+        )
+        if entity_id is not None:
+            registry.async_remove(entity_id)
 
 
 async def _async_register_map(
@@ -103,6 +120,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: H66ConfigEntry) -> bool:
     )
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
+    _async_remove_replaced_entities(hass, entry)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 

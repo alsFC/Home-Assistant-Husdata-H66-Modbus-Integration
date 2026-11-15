@@ -31,8 +31,8 @@ async def async_setup_entry(
 
 
 class H66Button(H66Entity, ButtonEntity):
-    """Resets an active heat pump alarm."""
+    """Resets a heat pump alarm; the heat pump turns off for 10 seconds."""
 
     async def async_press(self) -> None:
         """Reset the alarm."""
-        await self.coordinator.async_set(self.entity_description.key, 1)
+        await self.coordinator.async_reset_alarm()

@@ -56,18 +56,16 @@ NUMBERS: tuple[H66NumberEntityDescription, ...] = (
         native_step=60,
         mode=NumberMode.BOX,
     ),
-    H66NumberEntityDescription(
-        key="electric_heater_max_power",
-        translation_key="electric_heater_max_power",
-        mode=NumberMode.BOX,
-        entity_category=EntityCategory.CONFIG,
-    ),
     _temperature("summer_mode", native_step=1),
     H66NumberEntityDescription(
         key="holiday_mode",
         translation_key="holiday_mode",
+        device_class=NumberDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.DAYS,
         native_step=1,
         mode=NumberMode.BOX,
+        # How the H66 stores it (x10 or not) isn't verified yet.
+        entity_registry_enabled_default=False,
     ),
 )
 

@@ -1,40 +1,94 @@
 {
   "entity": {
     "binary_sensor": {
-      "compressor": { "default": "mdi:heat-pump" },
-      "add_heat_step_1": { "default": "mdi:heating-coil" },
-      "add_heat_step_2": { "default": "mdi:heating-coil" },
-      "pump_cold_circuit": { "default": "mdi:pump" },
-      "pump_heat_circuit": { "default": "mdi:pump" },
-      "pump_radiator": { "default": "mdi:pump" },
-      "switch_valve_1": { "default": "mdi:valve" }
+      "compressor": {
+        "default": "mdi:heat-pump"
+      },
+      "add_heat_step_1": {
+        "default": "mdi:heating-coil"
+      },
+      "add_heat_step_2": {
+        "default": "mdi:heating-coil"
+      },
+      "pump_cold_circuit": {
+        "default": "mdi:pump"
+      },
+      "pump_heat_circuit": {
+        "default": "mdi:pump"
+      },
+      "pump_radiator": {
+        "default": "mdi:pump"
+      },
+      "switch_valve_1": {
+        "default": "mdi:water-boiler"
+      }
     },
     "button": {
-      "alarm_reset": { "default": "mdi:alarm-light-off" }
+      "alarm_reset": {
+        "default": "mdi:alarm-light-off"
+      }
     },
     "number": {
-      "room_setpoint": { "default": "mdi:home-thermometer" },
-      "heat_curve": { "default": "mdi:chart-bell-curve-cumulative" },
-      "heat_curve_parallel": { "default": "mdi:arrow-up-down" },
-      "hot_water_stop_temperature": { "default": "mdi:water-boiler" },
-      "hot_water_difference": { "default": "mdi:water-boiler" },
-      "extra_hot_water": { "default": "mdi:water-plus" },
-      "electric_heater_max_power": { "default": "mdi:heating-coil" },
-      "summer_mode": { "default": "mdi:weather-sunny" },
-      "holiday_mode": { "default": "mdi:bag-suitcase" }
+      "room_setpoint": {
+        "default": "mdi:home-thermometer"
+      },
+      "heat_curve": {
+        "default": "mdi:chart-bell-curve-cumulative"
+      },
+      "heat_curve_parallel": {
+        "default": "mdi:arrow-up-down"
+      },
+      "hot_water_stop_temperature": {
+        "default": "mdi:water-boiler"
+      },
+      "hot_water_difference": {
+        "default": "mdi:water-boiler"
+      },
+      "extra_hot_water": {
+        "default": "mdi:water-plus"
+      },
+      "summer_mode": {
+        "default": "mdi:weather-sunny"
+      },
+      "holiday_mode": {
+        "default": "mdi:bag-suitcase"
+      }
+    },
+    "select": {
+      "electric_heater_max_power": {
+        "default": "mdi:heating-coil"
+      }
     },
     "sensor": {
-      "add_heat_status": { "default": "mdi:heating-coil" },
-      "alarm_code": { "default": "mdi:alert-circle-outline" },
-      "compressor_hours_heating": { "default": "mdi:timer-outline" },
-      "compressor_hours_hot_water": { "default": "mdi:timer-outline" },
-      "aux_heater_hours_heating": { "default": "mdi:timer-outline" },
-      "aux_heater_hours_hot_water": { "default": "mdi:timer-outline" },
-      "room_sensor_influence": { "default": "mdi:home-thermometer-outline" }
+      "add_heat_status": {
+        "default": "mdi:heating-coil"
+      },
+      "alarm_code": {
+        "default": "mdi:alert-circle-outline"
+      },
+      "compressor_hours_heating": {
+        "default": "mdi:timer-outline"
+      },
+      "compressor_hours_hot_water": {
+        "default": "mdi:timer-outline"
+      },
+      "aux_heater_hours_heating": {
+        "default": "mdi:timer-outline"
+      },
+      "aux_heater_hours_hot_water": {
+        "default": "mdi:timer-outline"
+      },
+      "room_sensor_influence": {
+        "default": "mdi:home-thermometer-outline"
+      }
     },
     "switch": {
-      "electric_heater_allowed": { "default": "mdi:heating-coil" },
-      "external_control": { "default": "mdi:remote" }
+      "electric_heater_allowed": {
+        "default": "mdi:heating-coil"
+      },
+      "external_control": {
+        "default": "mdi:remote"
+      }
     }
   }
 }

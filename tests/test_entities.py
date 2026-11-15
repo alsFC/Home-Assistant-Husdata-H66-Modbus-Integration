@@ -6,7 +6,12 @@ from datetime import timedelta
 
 from freezegun.api import FrozenDateTimeFactory
 from homeassistant.config_entries import ConfigEntryState
-from homeassistant.const import STATE_OFF, STATE_ON, STATE_UNAVAILABLE
+from homeassistant.const import (
+    STATE_OFF,
+    STATE_ON,
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
@@ -65,7 +70,8 @@ async def test_device(hass: HomeAssistant, setup_integration: MockConfigEntry) -
         ("sensor", "radiator_return", "39.5"),
         ("sensor", "hot_water_top", "53.1"),
         ("sensor", "add_heat_status", "0.0"),
-        ("sensor", "alarm_code", "19"),
+        ("sensor", "alarm_code", "alarm_19"),
+        ("binary_sensor", "switch_valve_1", STATE_OFF),
         ("sensor", "compressor_hours_heating", "37018"),
         ("sensor", "power_consumption", "2150"),
         ("sensor", "accumulated_consumption", "0.2"),
@@ -76,10 +82,9 @@ async def test_device(hass: HomeAssistant, setup_integration: MockConfigEntry) -
         ("number", "heat_curve", "6.5"),
         ("number", "heat_curve_parallel", "1.5"),
         ("number", "extra_hot_water", "0"),
-        ("number", "electric_heater_max_power", "2"),
+        ("select", "electric_heater_max_power", "6_kw"),
         ("number", "summer_mode", "18.0"),
         ("switch", "electric_heater_allowed", STATE_ON),
-        ("switch", "external_control", STATE_OFF),
     ],
 )
 async def test_states(
@@ -159,7 +164,8 @@ async def test_alarm_reset_button(
         {"entity_id": entity_id(hass, "button", "alarm_reset")},
         blocking=True,
     )
-    assert [(w.address, w.values) for w in writes] == [(26, [1])]
+    # Writing 0 is what resets an alarm.
+    assert [(w.address, w.values) for w in writes] == [(26, [0])]
 
 
 async def test_unavailable_when_h66_stops_answering(
@@ -283,7 +289,90 @@ async def test_swedish_names(
         ("number", "heat_curve_parallel"): "Värmekurva parallellförskjutning",
         ("switch", "electric_heater_allowed"): "Elpatron tillåten",
         ("button", "alarm_reset"): "Återställ larm",
+        ("sensor", "alarm_code"): "Senaste larm",
+        ("select", "electric_heater_max_power"): "Elpatron max effekt",
     }
     for (platform, key), name in names.items():
         state = hass.states.get(entity_id(hass, platform, key))
         assert state.attributes["friendly_name"] == f"H66 Rego 600 {name}"
+
+
+async def test_last_alarm(
+    hass: HomeAssistant, setup_integration: MockConfigEntry
+) -> None:
+    state = hass.states.get(entity_id(hass, "sensor", "alarm_code"))
+    assert state.state == "alarm_19"
+    assert state.attributes["code"] == 19
+    assert "alarm_23" in state.attributes["options"]
+
+
+async def test_select_electric_heater_max_power(
+    hass: HomeAssistant, setup_integration: MockConfigEntry, mock_modbus: MockModbusUnit
+) -> None:
+    writes = _writes(mock_modbus)
+    target = entity_id(hass, "select", "electric_heater_max_power")
+    assert hass.states.get(target).attributes["options"] == ["3_kw", "6_kw", "9_kw"]
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": target, "option": "9_kw"},
+        blocking=True,
+    )
+    assert [(w.address, w.values) for w in writes] == [(22, [4])]
+    assert hass.states.get(target).state == "9_kw"
+
+
+async def test_replaced_number_entity_is_removed(
+    hass: HomeAssistant,
+    config_entry: MockConfigEntry,
+    mock_web: AiohttpClientMocker,
+    mock_modbus: MockModbusUnit,
+) -> None:
+    config_entry.add_to_hass(hass)
+    registry = er.async_get(hass)
+    old = registry.async_get_or_create(
+        "number",
+        DOMAIN,
+        f"{MAC}_electric_heater_max_power",
+        config_entry=config_entry,
+    )
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert registry.async_get(old.entity_id) is None
+
+
+async def test_disabled_by_default_settings(
+    hass: HomeAssistant, setup_integration: MockConfigEntry
+) -> None:
+    registry = er.async_get(hass)
+    for platform, key in (("switch", "external_control"), ("number", "holiday_mode")):
+        entry = registry.async_get(entity_id(hass, platform, key))
+        assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+
+
+async def test_external_control_is_write_only(
+    hass: HomeAssistant,
+    setup_integration: MockConfigEntry,
+    mock_modbus: MockModbusUnit,
+) -> None:
+    registry = er.async_get(hass)
+    target = entity_id(hass, "switch", "external_control")
+    registry.async_update_entity(target, disabled_by=None)
+    await hass.config_entries.async_reload(setup_integration.entry_id)
+    await hass.async_block_till_done()
+
+    # The register reads 0, but that means nothing: the state starts unknown.
+    state = hass.states.get(target)
+    assert state.state == STATE_UNKNOWN
+    assert state.attributes["assumed_state"] is True
+
+    writes = _writes(mock_modbus)
+    await hass.services.async_call(
+        "switch", "turn_on", {"entity_id": target}, blocking=True
+    )
+    assert [(w.address, w.values) for w in writes] == [(23, [1])]
+    # Shows what was set, even though the register still reads back 0.
+    mock_modbus.holding[23] = 0
+    await setup_integration.runtime_data.async_refresh()
+    await hass.async_block_till_done()
+    assert hass.states.get(target).state == STATE_ON

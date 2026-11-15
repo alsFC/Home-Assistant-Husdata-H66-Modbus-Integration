@@ -52,56 +52,177 @@
   },
   "entity": {
     "binary_sensor": {
-      "compressor": { "name": "Compressor" },
-      "add_heat_step_1": { "name": "Additional heat step 1" },
-      "add_heat_step_2": { "name": "Additional heat step 2" },
-      "pump_cold_circuit": { "name": "Brine pump" },
-      "pump_heat_circuit": { "name": "Heat carrier pump" },
-      "pump_radiator": { "name": "Radiator pump" },
-      "switch_valve_1": { "name": "Switch valve" },
-      "alarm": { "name": "Alarm" }
+      "compressor": {
+        "name": "Compressor"
+      },
+      "add_heat_step_1": {
+        "name": "Additional heat step 1"
+      },
+      "add_heat_step_2": {
+        "name": "Additional heat step 2"
+      },
+      "pump_cold_circuit": {
+        "name": "Brine pump"
+      },
+      "pump_heat_circuit": {
+        "name": "Heat carrier pump"
+      },
+      "pump_radiator": {
+        "name": "Radiator pump"
+      },
+      "switch_valve_1": {
+        "name": "Hot water production"
+      },
+      "alarm": {
+        "name": "Alarm"
+      }
     },
     "button": {
-      "alarm_reset": { "name": "Reset alarm" }
+      "alarm_reset": {
+        "name": "Reset alarm"
+      }
     },
     "number": {
-      "room_setpoint": { "name": "Room temperature setpoint" },
-      "heat_curve": { "name": "Heat curve" },
-      "heat_curve_parallel": { "name": "Heat curve parallel offset" },
-      "hot_water_stop_temperature": { "name": "Hot water stop temperature" },
-      "hot_water_difference": { "name": "Hot water start difference" },
-      "extra_hot_water": { "name": "Extra hot water" },
-      "electric_heater_max_power": { "name": "Electric heater max power step" },
-      "summer_mode": { "name": "Summer mode outdoor temperature" },
-      "holiday_mode": { "name": "Holiday mode" }
+      "room_setpoint": {
+        "name": "Room temperature setpoint"
+      },
+      "heat_curve": {
+        "name": "Heat curve"
+      },
+      "heat_curve_parallel": {
+        "name": "Heat curve parallel offset"
+      },
+      "hot_water_stop_temperature": {
+        "name": "Hot water stop temperature"
+      },
+      "hot_water_difference": {
+        "name": "Hot water start difference"
+      },
+      "extra_hot_water": {
+        "name": "Extra hot water"
+      },
+      "summer_mode": {
+        "name": "Summer mode outdoor temperature"
+      },
+      "holiday_mode": {
+        "name": "Holiday mode"
+      }
+    },
+    "select": {
+      "electric_heater_max_power": {
+        "name": "Electric heater max power",
+        "state": {
+          "3_kw": "3 kW",
+          "6_kw": "6 kW",
+          "9_kw": "9 kW"
+        }
+      }
     },
     "sensor": {
-      "radiator_return": { "name": "Radiator return" },
-      "radiator_forward": { "name": "Radiator forward" },
-      "heat_carrier_return": { "name": "Heat carrier return" },
-      "heat_carrier_forward": { "name": "Heat carrier forward" },
-      "brine_in": { "name": "Brine in" },
-      "brine_out": { "name": "Brine out" },
-      "outdoor": { "name": "Outdoor temperature" },
-      "indoor": { "name": "Indoor temperature" },
-      "hot_water_top": { "name": "Hot water top" },
-      "hot_water_mid": { "name": "Hot water middle" },
-      "hot_gas": { "name": "Hot gas" },
-      "heating_setpoint": { "name": "Heating setpoint" },
-      "hot_water_setpoint": { "name": "Hot water setpoint" },
-      "add_heat_status": { "name": "Additional heat" },
-      "alarm_code": { "name": "Alarm code" },
-      "compressor_hours_heating": { "name": "Compressor hours heating" },
-      "compressor_hours_hot_water": { "name": "Compressor hours hot water" },
-      "aux_heater_hours_heating": { "name": "Electric heater hours heating" },
-      "aux_heater_hours_hot_water": { "name": "Electric heater hours hot water" },
-      "power_consumption": { "name": "Power consumption" },
-      "accumulated_consumption": { "name": "Accumulated consumption" },
-      "room_sensor_influence": { "name": "Room sensor influence" }
+      "radiator_return": {
+        "name": "Radiator return"
+      },
+      "radiator_forward": {
+        "name": "Radiator forward"
+      },
+      "heat_carrier_return": {
+        "name": "Heat carrier return"
+      },
+      "heat_carrier_forward": {
+        "name": "Heat carrier forward"
+      },
+      "brine_in": {
+        "name": "Brine in"
+      },
+      "brine_out": {
+        "name": "Brine out"
+      },
+      "outdoor": {
+        "name": "Outdoor temperature"
+      },
+      "indoor": {
+        "name": "Indoor temperature"
+      },
+      "hot_water_top": {
+        "name": "Hot water top"
+      },
+      "hot_water_mid": {
+        "name": "Hot water middle"
+      },
+      "hot_gas": {
+        "name": "Hot gas"
+      },
+      "heating_setpoint": {
+        "name": "Heating setpoint"
+      },
+      "hot_water_setpoint": {
+        "name": "Hot water setpoint"
+      },
+      "add_heat_status": {
+        "name": "Additional heat"
+      },
+      "alarm_code": {
+        "name": "Last alarm",
+        "state": {
+          "alarm_1": "Sensor radiator return (GT1)",
+          "alarm_2": "Outdoor sensor (GT2)",
+          "alarm_3": "Sensor hot water (GT3)",
+          "alarm_4": "Mixing valve sensor (GT4)",
+          "alarm_5": "Room sensor (GT5)",
+          "alarm_6": "Sensor compressor (GT6)",
+          "alarm_7": "Sensor heat fluid out (GT8)",
+          "alarm_8": "Sensor heat fluid in (GT9)",
+          "alarm_9": "Sensor cold fluid in (GT10)",
+          "alarm_10": "Sensor cold fluid out (GT11)",
+          "alarm_11": "Compressor circuit switch",
+          "alarm_12": "Electrical cassette",
+          "alarm_13": "Pump circuit switch (MB2)",
+          "alarm_14": "Low pressure switch (LP)",
+          "alarm_15": "High pressure switch (HP)",
+          "alarm_16": "High return HP (GT9)",
+          "alarm_17": "Heat carrier out max (GT8)",
+          "alarm_18": "Brine in under limit (GT10)",
+          "alarm_19": "Brine out under limit (GT11)",
+          "alarm_20": "Compressor superheat (GT6)",
+          "alarm_21": "3-phase incorrect order",
+          "alarm_22": "Power failure",
+          "alarm_23": "Heat delta exceeded"
+        },
+        "state_attributes": {
+          "code": {
+            "name": "Code"
+          }
+        }
+      },
+      "compressor_hours_heating": {
+        "name": "Compressor hours heating"
+      },
+      "compressor_hours_hot_water": {
+        "name": "Compressor hours hot water"
+      },
+      "aux_heater_hours_heating": {
+        "name": "Electric heater hours heating"
+      },
+      "aux_heater_hours_hot_water": {
+        "name": "Electric heater hours hot water"
+      },
+      "power_consumption": {
+        "name": "Power consumption"
+      },
+      "accumulated_consumption": {
+        "name": "Accumulated consumption"
+      },
+      "room_sensor_influence": {
+        "name": "Room sensor influence"
+      }
     },
     "switch": {
-      "electric_heater_allowed": { "name": "Electric heater allowed" },
-      "external_control": { "name": "External control" }
+      "electric_heater_allowed": {
+        "name": "Electric heater allowed"
+      },
+      "external_control": {
+        "name": "External control"
+      }
     }
   },
   "exceptions": {

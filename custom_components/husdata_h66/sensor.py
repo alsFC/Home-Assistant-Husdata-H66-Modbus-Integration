@@ -18,13 +18,14 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
-from husdata_h66 import VariableKind
+from husdata_h66 import ALARM_CODES, VariableKind
 
 from .binary_sensor import BINARY_SENSORS
 from .button import BUTTONS
 from .coordinator import H66ConfigEntry, H66Coordinator
 from .entity import H66Entity
 from .number import NUMBERS
+from .select import SELECTS
 from .switch import SWITCHES
 
 PARALLEL_UPDATES = 0
@@ -77,7 +78,8 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="alarm_code",
         translation_key="alarm_code",
-        entity_category=EntityCategory.DIAGNOSTIC,
+        device_class=SensorDeviceClass.ENUM,
+        options=[f"alarm_{code}" for code in ALARM_CODES],
     ),
     _hours("compressor_hours_heating"),
     _hours("compressor_hours_hot_water"),
@@ -109,7 +111,9 @@ SENSORS: tuple[SensorEntityDescription, ...] = (
 
 # Registers some other platform turns into an entity.
 _OTHER_PLATFORMS = {
-    d.key for group in (BINARY_SENSORS, BUTTONS, NUMBERS, SWITCHES) for d in group
+    d.key
+    for group in (BINARY_SENSORS, BUTTONS, NUMBERS, SELECTS, SWITCHES)
+    for d in group
 }
 
 # For registers this integration doesn't know, e.g. custom registers.
@@ -165,7 +169,10 @@ async def async_setup_entry(
     coordinator = entry.runtime_data
     descriptions = [d for d in SENSORS if d.key in coordinator.registers]
     descriptions += _generic_descriptions(coordinator)
-    async_add_entities(H66Sensor(coordinator, d) for d in descriptions)
+    async_add_entities(
+        (H66LastAlarmSensor if d.key == "alarm_code" else H66Sensor)(coordinator, d)
+        for d in descriptions
+    )
 
 
 class H66Sensor(H66Entity, SensorEntity):
@@ -192,3 +199,18 @@ class H66Sensor(H66Entity, SensorEntity):
         if isinstance(value, bool):
             return int(value)
         return value
+
+
+class H66LastAlarmSensor(H66Sensor):
+    """The last alarm that triggered, even if no alarm is active now."""
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the alarm, or None for a code Husdata doesn't list."""
+        code = self.value
+        return f"alarm_{code}" if code in ALARM_CODES else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, int | None]:
+        """Expose the raw alarm code."""
+        return {"code": self.value}

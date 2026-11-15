@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Coroutine
 from datetime import timedelta
 from typing import Any
 
@@ -77,8 +78,16 @@ class H66Coordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_set(self, key: str, value: float | bool) -> None:
         """Write a setting, then read everything back."""
+        await self._async_write(self.device.async_set(key, value))
+
+    async def async_reset_alarm(self) -> None:
+        """Reset an alarm: the heat pump turns off for 10 seconds."""
+        await self._async_write(self.device.async_reset_alarm())
+
+    async def _async_write(self, write: Coroutine[Any, Any, None]) -> None:
+        """Run a write, translating errors, then read everything back."""
         try:
-            await self.device.async_set(key, value)
+            await write
         except ValueError as err:
             raise ServiceValidationError(
                 translation_domain=DOMAIN,

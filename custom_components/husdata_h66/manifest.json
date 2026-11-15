@@ -9,6 +9,6 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/jonnybergdahl/HomeAssistant_Husdata_H66_Modbus_Integration/issues",
   "loggers": ["husdata_h66", "modbus_connection", "tmodbus"],
-  "requirements": ["husdata-h66-modbus==0.1.0"],
+  "requirements": ["husdata-h66-modbus==0.1.1"],
   "version": "0.1.0"
 }

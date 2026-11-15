@@ -29,9 +29,8 @@ BINARY_SENSORS: tuple[BinarySensorEntityDescription, ...] = (
     _running("pump_cold_circuit"),
     _running("pump_heat_circuit"),
     _running("pump_radiator"),
-    BinarySensorEntityDescription(
-        key="switch_valve_1", translation_key="switch_valve_1"
-    ),
+    # The switch valve: off when heating the radiators, on when making hot water.
+    _running("switch_valve_1"),
     BinarySensorEntityDescription(
         key="alarm",
         translation_key="alarm",

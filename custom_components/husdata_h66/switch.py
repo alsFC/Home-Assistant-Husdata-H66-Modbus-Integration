@@ -5,11 +5,12 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
-from homeassistant.const import EntityCategory
+from homeassistant.const import STATE_OFF, STATE_ON, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
 
-from .coordinator import H66ConfigEntry
+from .coordinator import H66ConfigEntry, H66Coordinator
 from .entity import H66Entity
 
 PARALLEL_UPDATES = 1
@@ -24,6 +25,8 @@ SWITCHES: tuple[SwitchEntityDescription, ...] = (
         key="external_control",
         translation_key="external_control",
         entity_category=EntityCategory.CONFIG,
+        # Husdata warns it can behave unpredictably on a Rego 600.
+        entity_registry_enabled_default=False,
     ),
 )
 
@@ -35,11 +38,14 @@ async def async_setup_entry(
 ) -> None:
     """Set up the switches."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        H66Switch(coordinator, d)
-        for d in SWITCHES
-        if d.key in coordinator.registers and coordinator.registers[d.key].writable
-    )
+    entities: list[H66Switch] = []
+    for description in SWITCHES:
+        register = coordinator.registers.get(description.key)
+        if register is None or not register.writable:
+            continue
+        cls = H66WriteOnlySwitch if register.write_only else H66Switch
+        entities.append(cls(coordinator, description))
+    async_add_entities(entities)
 
 
 class H66Switch(H66Entity, SwitchEntity):
@@ -57,3 +63,40 @@ class H66Switch(H66Entity, SwitchEntity):
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the setting off."""
         await self.coordinator.async_set(self.entity_description.key, False)
+
+
+class H66WriteOnlySwitch(H66Switch, RestoreEntity):
+    """An on/off setting the H66 can't read back; shows what was last set."""
+
+    _attr_assumed_state = True
+
+    def __init__(
+        self, coordinator: H66Coordinator, description: SwitchEntityDescription
+    ) -> None:
+        """Initialise the switch."""
+        super().__init__(coordinator, description)
+        self._last_set: bool | None = None
+
+    async def async_added_to_hass(self) -> None:
+        """Restore the last set state."""
+        await super().async_added_to_hass()
+        state = await self.async_get_last_state()
+        if state is not None and state.state in (STATE_ON, STATE_OFF):
+            self._last_set = state.state == STATE_ON
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return the last set state."""
+        return self._last_set
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn the setting on."""
+        await super().async_turn_on(**kwargs)
+        self._last_set = True
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Turn the setting off."""
+        await super().async_turn_off(**kwargs)
+        self._last_set = False
+        self.async_write_ha_state()
