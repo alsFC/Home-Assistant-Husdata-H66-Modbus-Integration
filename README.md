@@ -9,6 +9,24 @@ A Home Assistant custom integration for the [Husdata H66](https://husdata.se/pro
 
 It uses Home Assistant's own Modbus connection handling (2026.10 or newer) and the [husdata-h66-modbus](https://pypi.org/project/husdata-h66-modbus/) library. It is tested with an IVT Greenline (Rego 600 controller), and reads the register map from the H66 web page, so other heat pumps the H66 supports should work too.
 
+## Screenshots
+
+The device page for an IVT Greenline with a Rego 600, with Home Assistant in Swedish:
+
+<table>
+  <tr>
+    <td valign="top">
+      <img src="docs/images/device_info.png" alt="Device info: H66 by Husdata, firmware, controller and MAC address" width="420">
+      <img src="docs/images/sensors.png" alt="Sensors: temperatures, pumps, compressor, additional heat and power" width="420"><br>
+    </td>
+    <td valign="top">
+      <img src="docs/images/controls.png" alt="Controls: reset alarm, room setpoint, extra hot water, holiday mode and summer mode" width="420"><br>
+      <img src="docs/images/configuration.png" alt="Configuration: electric heater settings, external control, heat curve and hot water settings" width="420"><br>
+      <img src="docs/images/diagnostic.png" alt="Diagnostic: operating hours and last alarm" width="420">
+    </td>
+  </tr>
+</table>
+
 ## Before you start
 
 Modbus TCP is off in the H66 by default:
