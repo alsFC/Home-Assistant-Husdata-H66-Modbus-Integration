@@ -1,4 +1,4 @@
-# Husdata H66 for Home Assistant
+# Husdata H66 MODBUS Integration for Home Assistant
 
 A Home Assistant custom integration for the [Husdata H66](https://husdata.se/produkt/h66-wifi-eth-gateway-styr-din-varmepump/) heat pump gateway. It talks to the H66 over Modbus TCP and gives every value a proper entity, instead of the `climate` "thermostats" the H66 creates for its settings with MQTT discovery:
 
