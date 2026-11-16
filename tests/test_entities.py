@@ -129,6 +129,19 @@ async def test_set_number(
     assert hass.states.get(target).state == "21.5"
 
 
+async def test_set_holiday_mode_in_whole_days(
+    hass: HomeAssistant, setup_integration: MockConfigEntry, mock_modbus: MockModbusUnit
+) -> None:
+    # The register holds days unscaled: 1 day is raw 1, not 10.
+    writes = _writes(mock_modbus)
+    target = entity_id(hass, "number", "holiday_mode")
+    await hass.services.async_call(
+        "number", "set_value", {"entity_id": target, "value": 1}, blocking=True
+    )
+    assert [(w.address, w.values) for w in writes] == [(25, [1])]
+    assert hass.states.get(target).state == "1"
+
+
 async def test_set_number_invalid_step(
     hass: HomeAssistant, setup_integration: MockConfigEntry, mock_modbus: MockModbusUnit
 ) -> None:
@@ -349,9 +362,10 @@ async def test_disabled_by_default_settings(
     hass: HomeAssistant, setup_integration: MockConfigEntry
 ) -> None:
     registry = er.async_get(hass)
-    for platform, key in (("switch", "external_control"), ("number", "holiday_mode")):
-        entry = registry.async_get(entity_id(hass, platform, key))
-        assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+    entry = registry.async_get(entity_id(hass, "switch", "external_control"))
+    assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+    entry = registry.async_get(entity_id(hass, "number", "holiday_mode"))
+    assert entry.disabled_by is None
 
 
 async def test_external_control_is_write_only(

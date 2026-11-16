@@ -102,9 +102,9 @@ Names below are for a Rego 600, with the meanings from Husdata's [variable list 
 | Hot water production | Binary sensor | The switch valve: on while making hot water, off while heating the radiators |
 | Alarm | Binary sensor | Problem |
 | Room temperature setpoint | Number | 5–29 °C |
-| Extra hot water | Number | 0–1440 min, in whole hours |
+| Extra hot water | Number | 0–1440 min, in whole hours. On a Rego 600 it doesn't work yet: the heat pump resets it to 0 after about 20 seconds |
 | Summer mode outdoor temperature | Number | 0–30 °C |
-| Holiday mode | Number | 0–30 days. Disabled by default, since how the H66 stores it isn't verified yet. While it's active, set it to 0 before setting a new value |
+| Holiday mode | Number | 0–30 days. While it's active, set it to 0 before setting a new value |
 | Heat curve, Heat curve parallel offset, Hot water stop temperature, Hot water start difference | Number | Config |
 | Electric heater max power | Select | 3, 6 or 9 kW. Config |
 | Electric heater allowed | Switch | Takes effect the next time the electric heater would start. Config |

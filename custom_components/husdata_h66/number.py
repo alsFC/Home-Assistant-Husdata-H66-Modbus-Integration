@@ -64,8 +64,6 @@ NUMBERS: tuple[H66NumberEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTime.DAYS,
         native_step=1,
         mode=NumberMode.BOX,
-        # How the H66 stores it (x10 or not) isn't verified yet.
-        entity_registry_enabled_default=False,
     ),
 )
 

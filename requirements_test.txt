@@ -1,5 +1,5 @@
 pytest-homeassistant-custom-component
-husdata-h66-modbus==0.1.1
+husdata-h66-modbus==0.1.2
 # Requirements of Home Assistant's modbus component, which the tests load
 modbus-connection[tmodbus]
 pymodbus
