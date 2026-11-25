@@ -29,6 +29,12 @@ BINARY_SENSORS: tuple[BinarySensorEntityDescription, ...] = (
     _running("pump_cold_circuit"),
     _running("pump_heat_circuit"),
     _running("pump_radiator"),
+    _running("rego1000_fan"),
+    _running("rego1000_high_pressostat"),
+    _running("rego1000_low_pressostat"),
+    _running("rego1000_heating_cable"),
+    _running("rego1000_crank_case_heater"),
+    _running("rego1000_pump_radiator_2"),
     # The switch valve: off when heating the radiators, on when making hot water.
     _running("switch_valve_1"),
     BinarySensorEntityDescription(

@@ -31,6 +31,24 @@ SELECTS: tuple[H66SelectEntityDescription, ...] = (
         # The H66 calls them steps 1, 2 and 4.
         values={"3_kw": 1, "6_kw": 2, "9_kw": 4},
     ),
+    H66SelectEntityDescription(
+        key="rego1000_summer_mode",
+        translation_key="rego1000_summer_mode",
+        entity_category=EntityCategory.CONFIG,
+        values={"winter": 0, "auto": 1, "summer": 2},
+    ),
+    H66SelectEntityDescription(
+        key="rego1000_hot_water_program",
+        translation_key="rego1000_hot_water_program",
+        entity_category=EntityCategory.CONFIG,
+        values={"comfort": 0, "economy": 1},
+    ),
+    H66SelectEntityDescription(
+        key="rego1000_hot_water_time_program",
+        translation_key="rego1000_hot_water_time_program",
+        entity_category=EntityCategory.CONFIG,
+        values={"always": 0, "program_1": 1, "program_2": 2},
+    ),
 )
 
 

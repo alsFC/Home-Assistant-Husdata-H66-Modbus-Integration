@@ -75,6 +75,24 @@
       },
       "alarm": {
         "name": "Larm"
+      },
+      "rego1000_fan": {
+        "name": "Fläkt"
+      },
+      "rego1000_high_pressostat": {
+        "name": "Högtryckspressostat"
+      },
+      "rego1000_low_pressostat": {
+        "name": "Lågtryckspressostat"
+      },
+      "rego1000_heating_cable": {
+        "name": "Värmekabel"
+      },
+      "rego1000_crank_case_heater": {
+        "name": "Vevhusvärmare"
+      },
+      "rego1000_pump_radiator_2": {
+        "name": "Radiatorpump 2"
       }
     },
     "button": {
@@ -106,6 +124,36 @@
       },
       "holiday_mode": {
         "name": "Semesterläge"
+      },
+      "rego1000_room_setpoint": {
+        "name": "Room temperature setpoint (Rego 1000)"
+      },
+      "rego1000_room_sensor_influence": {
+        "name": "Room sensor influence (Rego 1000)"
+      },
+      "rego1000_heat_curve_1_left": {
+        "name": "Heating curve 1 – left point"
+      },
+      "rego1000_heat_curve_1_right": {
+        "name": "Heating curve 1 – right point"
+      },
+      "rego1000_extra_hot_water": {
+        "name": "Extra hot water duration"
+      },
+      "rego1000_outdoor_temp_offset": {
+        "name": "Outdoor temperature offset"
+      },
+      "rego1000_room_setpoint_2": {
+        "name": "Room temperature setpoint 2"
+      },
+      "rego1000_heat_curve_2_left": {
+        "name": "Heating curve 2 – left point"
+      },
+      "rego1000_heat_curve_2_right": {
+        "name": "Heating curve 2 – right point"
+      },
+      "rego1000_pool_setpoint": {
+        "name": "Pool temperature setpoint"
       }
     },
     "select": {
@@ -115,6 +163,29 @@
           "3_kw": "3 kW",
           "6_kw": "6 kW",
           "9_kw": "9 kW"
+        }
+      },
+      "rego1000_summer_mode": {
+        "name": "Sommarläge (Rego 1000)",
+        "state": {
+          "winter": "Vinter",
+          "auto": "Automatiskt",
+          "summer": "Sommar"
+        }
+      },
+      "rego1000_hot_water_program": {
+        "name": "Varmvattenprogram",
+        "state": {
+          "comfort": "Komfort",
+          "economy": "Ekonomi"
+        }
+      },
+      "rego1000_hot_water_time_program": {
+        "name": "Varmvattentidsprogram",
+        "state": {
+          "always": "Alltid",
+          "program_1": "Program 1",
+          "program_2": "Program 2"
         }
       }
     },
@@ -214,6 +285,36 @@
       },
       "room_sensor_influence": {
         "name": "Rumsgivarens inverkan"
+      },
+      "rego1000_air_intake": {
+        "name": "Luftintagstemperatur"
+      },
+      "rego1000_pool_temperature": {
+        "name": "Pooltemperatur"
+      },
+      "rego1000_radiator_forward_2": {
+        "name": "Radiator framledning 2"
+      },
+      "rego1000_indoor_2": {
+        "name": "Rumstemperatur 2"
+      },
+      "rego1000_supp_energy_heating": {
+        "name": "Tillsatsenergi – värme"
+      },
+      "rego1000_supp_energy_hot_water": {
+        "name": "Tillsatsenergi – varmvatten"
+      },
+      "rego1000_compressor_energy_heating": {
+        "name": "Kompressorenergi – värme"
+      },
+      "rego1000_compressor_energy_hot_water": {
+        "name": "Kompressorenergi – varmvatten"
+      },
+      "rego1000_aux_energy_heating": {
+        "name": "Hjälpenergi – värme"
+      },
+      "rego1000_aux_energy_hot_water": {
+        "name": "Hjälpenergi – varmvatten"
       }
     },
     "switch": {
@@ -222,6 +323,9 @@
       },
       "external_control": {
         "name": "Extern styrning"
+      },
+      "rego1000_holiday_mode": {
+        "name": "Semesterläge (Rego 1000)"
       }
     }
   },

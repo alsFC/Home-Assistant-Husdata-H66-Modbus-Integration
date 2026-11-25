@@ -79,7 +79,7 @@ async def test_device(hass: HomeAssistant, setup_integration: MockConfigEntry) -
         ("binary_sensor", "compressor", STATE_ON),
         ("binary_sensor", "add_heat_step_1", STATE_OFF),
         ("binary_sensor", "alarm", STATE_OFF),
-        ("number", "room_setpoint", "21.0"),
+        ("number", "rego1000_room_setpoint", "21.0"),
         ("number", "heat_curve", "6.5"),
         ("number", "heat_curve_parallel", "1.5"),
         ("number", "extra_hot_water", "0"),
@@ -101,8 +101,8 @@ async def test_states(
 async def test_number_limits(
     hass: HomeAssistant, setup_integration: MockConfigEntry
 ) -> None:
-    attrs = hass.states.get(entity_id(hass, "number", "room_setpoint")).attributes
-    assert (attrs["min"], attrs["max"], attrs["step"]) == (5, 29, 0.5)
+    attrs = hass.states.get(entity_id(hass, "number", "rego1000_room_setpoint")).attributes
+    assert (attrs["min"], attrs["max"], attrs["step"]) == (10, 29, 0.1)
     attrs = hass.states.get(entity_id(hass, "number", "extra_hot_water")).attributes
     assert (attrs["min"], attrs["max"], attrs["step"]) == (0, 1440, 60)
 
@@ -111,17 +111,21 @@ async def test_missing_sensors_disabled_by_default(
     hass: HomeAssistant, setup_integration: MockConfigEntry
 ) -> None:
     registry = er.async_get(hass)
-    for key in ("radiator_forward", "indoor", "hot_water_mid", "room_sensor_influence"):
+    for key in ("radiator_forward", "indoor", "hot_water_mid"):
         entry = registry.async_get(entity_id(hass, "sensor", key))
         assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
     assert registry.async_get(entity_id(hass, "sensor", "outdoor")).disabled_by is None
+    # Rego 1000 room sensor influence is a controllable number, not a sensor.
+    assert registry.async_get(
+        entity_id(hass, "number", "rego1000_room_sensor_influence")
+    ) is not None
 
 
 async def test_set_number(
     hass: HomeAssistant, setup_integration: MockConfigEntry, mock_modbus: MockModbusUnit
 ) -> None:
     writes = _writes(mock_modbus)
-    target = entity_id(hass, "number", "room_setpoint")
+    target = entity_id(hass, "number", "rego1000_room_setpoint")
     await hass.services.async_call(
         "number", "set_value", {"entity_id": target, "value": 21.5}, blocking=True
     )
@@ -150,7 +154,7 @@ async def test_set_number_invalid_step(
         await hass.services.async_call(
             "number",
             "set_value",
-            {"entity_id": entity_id(hass, "number", "room_setpoint"), "value": 21.25},
+            {"entity_id": entity_id(hass, "number", "rego1000_room_setpoint"), "value": 21.25},
             blocking=True,
         )
     assert not writes
@@ -420,7 +424,7 @@ async def test_written_value_shown_while_h66_lags(
     mock_modbus: MockModbusUnit,
     freezer: FrozenDateTimeFactory,
 ) -> None:
-    target = entity_id(hass, "number", "room_setpoint")
+    target = entity_id(hass, "number", "rego1000_room_setpoint")
     _lagging(mock_modbus, 14, 210)
     await hass.services.async_call(
         "number", "set_value", {"entity_id": target, "value": 21.5}, blocking=True
@@ -452,7 +456,7 @@ async def test_unconfirmed_write_is_retried_once_then_h66_wins(
     freezer: FrozenDateTimeFactory,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    target = entity_id(hass, "number", "room_setpoint")
+    target = entity_id(hass, "number", "rego1000_room_setpoint")
     _lagging(mock_modbus, 14, 210)
     writes = _writes(mock_modbus)
     await hass.services.async_call(
@@ -481,7 +485,7 @@ async def test_dropped_write_applied_by_retry(
     mock_modbus: MockModbusUnit,
     freezer: FrozenDateTimeFactory,
 ) -> None:
-    target = entity_id(hass, "number", "room_setpoint")
+    target = entity_id(hass, "number", "rego1000_room_setpoint")
     writes = _writes(mock_modbus)
 
     # Like the H66 on 2026-11-15: the first write is dropped, the retry lands.

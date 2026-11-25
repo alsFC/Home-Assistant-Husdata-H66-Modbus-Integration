@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from homeassistant.components.modbus import async_get_unit
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ConfigEntryError, HomeAssistantError
 from homeassistant.helpers import config_validation as cv, entity_registry as er
 from homeassistant.helpers.typing import ConfigType
 from husdata_h66 import REGO600_REGISTERS, HusdataH66, Register
 from modbus_connection import ModbusTcpParams
+from modbus_connection.tmodbus import ModbusConnection as TmodbusConnection
 
 from .const import (
     CONF_CONTROLLER,
@@ -96,29 +95,25 @@ async def _async_register_map(
 async def async_setup_entry(hass: HomeAssistant, entry: H66ConfigEntry) -> bool:
     """Set up an H66 gateway from a config entry."""
     registers, firmware, controller, mac = await _async_register_map(hass, entry)
-    try:
-        unit = async_get_unit(
-            hass,
-            entry,
-            ModbusTcpParams(host=entry.data[CONF_HOST], port=entry.data[CONF_PORT]),
-            entry.data[CONF_UNIT_ID],
-        )
-    except HomeAssistantError as err:
-        raise ConfigEntryError(
-            translation_domain=DOMAIN,
-            translation_key="connection_in_use",
-            translation_placeholders={"error": str(err)},
-        ) from err
+    connection = TmodbusConnection(
+        ModbusTcpParams(host=entry.data[CONF_HOST], port=entry.data[CONF_PORT])
+    )
+    unit = connection.for_unit(entry.data[CONF_UNIT_ID])
 
     coordinator = H66Coordinator(
         hass,
         entry,
         HusdataH66(unit, registers),
+        connection=connection,
         firmware=firmware,
         controller=controller,
         mac=mac,
     )
-    await coordinator.async_config_entry_first_refresh()
+    try:
+        await coordinator.async_config_entry_first_refresh()
+    except Exception:
+        await connection.close()
+        raise
     entry.runtime_data = coordinator
     _async_remove_replaced_entities(hass, entry)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -127,4 +122,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: H66ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: H66ConfigEntry) -> bool:
     """Unload a config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        return False
+    await entry.runtime_data.async_shutdown()
+    return True

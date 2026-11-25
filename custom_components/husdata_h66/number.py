@@ -38,6 +38,28 @@ def _temperature(key: str, **kwargs) -> H66NumberEntityDescription:
 
 NUMBERS: tuple[H66NumberEntityDescription, ...] = (
     _temperature("room_setpoint", native_step=0.5),
+    _temperature("rego1000_room_setpoint"),
+    H66NumberEntityDescription(
+        key="rego1000_room_sensor_influence",
+        translation_key="rego1000_room_sensor_influence",
+        mode=NumberMode.BOX,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    _temperature("rego1000_heat_curve_1_left", entity_category=EntityCategory.CONFIG),
+    _temperature("rego1000_heat_curve_1_right", entity_category=EntityCategory.CONFIG),
+    H66NumberEntityDescription(
+        key="rego1000_extra_hot_water",
+        translation_key="rego1000_extra_hot_water",
+        device_class=NumberDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        native_step=1,
+        mode=NumberMode.BOX,
+    ),
+    _temperature("rego1000_outdoor_temp_offset", entity_category=EntityCategory.CONFIG),
+    _temperature("rego1000_room_setpoint_2"),
+    _temperature("rego1000_heat_curve_2_left", entity_category=EntityCategory.CONFIG),
+    _temperature("rego1000_heat_curve_2_right", entity_category=EntityCategory.CONFIG),
+    _temperature("rego1000_pool_setpoint"),
     H66NumberEntityDescription(
         key="heat_curve",
         translation_key="heat_curve",

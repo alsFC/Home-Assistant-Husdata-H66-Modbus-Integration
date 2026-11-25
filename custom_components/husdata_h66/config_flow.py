@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from homeassistant.components.modbus import async_get_temporary_unit
 from homeassistant.config_entries import (
     ConfigFlow,
     ConfigFlowResult,
@@ -22,6 +21,7 @@ from homeassistant.helpers.selector import (
 )
 from husdata_h66 import REGO600_REGISTERS, HusdataH66, Register
 from modbus_connection import ModbusError, ModbusTcpParams
+from modbus_connection.tmodbus import ModbusConnection as TmodbusConnection
 import voluptuous as vol
 
 from .const import (
@@ -93,10 +93,11 @@ async def _async_probe(hass: HomeAssistant, user_input: dict[str, Any]) -> Probe
     registers: list[Register] = info.registers if info else list(REGO600_REGISTERS)
 
     try:
-        async with async_get_temporary_unit(
-            hass, ModbusTcpParams(host=host, port=port), unit_id
-        ) as unit:
-            report = await HusdataH66(unit, registers).async_update()
+        connection = TmodbusConnection(ModbusTcpParams(host=host, port=port))
+        try:
+            report = await HusdataH66(connection.for_unit(unit_id), registers).async_update()
+        finally:
+            await connection.close()
     except (ModbusError, HomeAssistantError) as err:
         raise CannotConnect(str(err)) from err
     if not report.complete:

@@ -22,6 +22,11 @@ SWITCHES: tuple[SwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
     ),
     SwitchEntityDescription(
+        key="rego1000_holiday_mode",
+        translation_key="rego1000_holiday_mode",
+        entity_category=EntityCategory.CONFIG,
+    ),
+    SwitchEntityDescription(
         key="external_control",
         translation_key="external_control",
         entity_category=EntityCategory.CONFIG,
