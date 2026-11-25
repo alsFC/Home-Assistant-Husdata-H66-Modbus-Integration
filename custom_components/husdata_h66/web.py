@@ -52,7 +52,7 @@ _REGO1000_DEFINITIONS: dict[str, dict[str, Any]] = {
     "5C58": {"key": "rego1000_aux_energy_heating", "kind": VariableKind.ENERGY, "scale": 1, "unit": "kWh"},
     "5C59": {"key": "rego1000_aux_energy_hot_water", "kind": VariableKind.ENERGY, "scale": 1, "unit": "kWh"},
     "0203": {"key": "rego1000_room_setpoint", "minimum": 10, "maximum": 29, "step": 0.1},
-    "2204": {"key": "rego1000_room_sensor_influence", "kind": VariableKind.NUMBER, "scale": 1, "minimum": 0, "maximum": 10, "step": 0.1},
+    "2204": {"key": "rego1000_room_sensor_influence", "kind": VariableKind.NUMBER, "scale": 0.1, "minimum": 0, "maximum": 10, "step": 0.1},
     "0205": {"key": "rego1000_heat_curve_1_left", "minimum": 10, "maximum": 60, "step": 0.1},
     "0206": {"key": "rego1000_heat_curve_1_right", "minimum": 10, "maximum": 80, "step": 0.1},
     "6209": {"key": "rego1000_extra_hot_water", "kind": VariableKind.HOURS, "scale": 1, "unit": "h", "minimum": 0, "maximum": 48, "step": 1},
