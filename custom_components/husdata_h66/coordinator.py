@@ -14,7 +14,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 from husdata_h66 import HusdataH66, Register
-from modbus_connection import ModbusError
+from modbus_connection import ModbusConnection, ModbusError
 
 from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
 
@@ -51,6 +51,7 @@ class H66Coordinator(DataUpdateCoordinator[dict[str, Any]]):
         entry: H66ConfigEntry,
         device: HusdataH66,
         *,
+        connection: ModbusConnection,
         firmware: str | None,
         controller: str | None,
         mac: str | None,
@@ -66,6 +67,7 @@ class H66Coordinator(DataUpdateCoordinator[dict[str, Any]]):
             ),
         )
         self.device = device
+        self.connection = connection
         self.firmware = firmware
         self.controller = controller
         self.mac = mac
@@ -206,3 +208,4 @@ class H66Coordinator(DataUpdateCoordinator[dict[str, Any]]):
             self._unsub_read_back()
             self._unsub_read_back = None
         await super().async_shutdown()
+        await self.connection.close()

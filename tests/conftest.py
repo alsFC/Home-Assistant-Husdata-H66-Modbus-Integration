@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Generator
-from contextlib import asynccontextmanager
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.core import HomeAssistant
@@ -68,12 +67,19 @@ def auto_enable_custom_integrations(enable_custom_integrations: None) -> None:
 
 
 @pytest.fixture
-def mock_unit() -> MockModbusUnit:
-    """A mock Modbus unit answering with the captured registers."""
-    unit = MockModbusConnection().for_unit(1)
+def mock_connection() -> MockModbusConnection:
+    """A mock Modbus connection answering with the captured registers."""
+    connection = MockModbusConnection()
+    unit = connection.for_unit(1)
     table = dict(enumerate(CAPTURED))
     unit.load_raw({"input": table, "holding": table})
-    return unit
+    return connection
+
+
+@pytest.fixture
+def mock_unit(mock_connection: MockModbusConnection) -> MockModbusUnit:
+    """A mock Modbus unit answering with the captured registers."""
+    return mock_connection.for_unit(1)
 
 
 @pytest.fixture
@@ -84,19 +90,14 @@ def mock_web(aioclient_mock: AiohttpClientMocker) -> AiohttpClientMocker:
 
 
 @pytest.fixture
-def mock_modbus(mock_unit: MockModbusUnit) -> Generator[MockModbusUnit]:
+def mock_modbus(
+    mock_connection: MockModbusConnection, mock_unit: MockModbusUnit
+) -> Generator[MockModbusUnit]:
     """Hand out the mock unit instead of opening real Modbus connections."""
-
-    @asynccontextmanager
-    async def temporary_unit(*args: Any) -> AsyncIterator[MockModbusUnit]:
-        yield mock_unit
-
     with (
-        patch("custom_components.husdata_h66.async_get_unit", return_value=mock_unit),
-        patch(
-            "custom_components.husdata_h66.config_flow.async_get_temporary_unit",
-            temporary_unit,
-        ),
+        patch("custom_components.husdata_h66.TmodbusConnection", return_value=mock_connection),
+        patch("custom_components.husdata_h66.config_flow.TmodbusConnection", return_value=mock_connection),
+        patch.object(mock_connection, "close", new_callable=AsyncMock),
     ):
         yield mock_unit
 
